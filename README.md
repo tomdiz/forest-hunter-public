@@ -5,7 +5,15 @@ A hunter follows a river through a pine forest, past a log cabin and its campfir
 with glowing red eyes. The stag hides, peeks, stalks, charges and retreats. Shoot it five times to win.
 Lose all three hearts and it's game over.
 
-This is a private, personal project. The assets are third-party packs, so do not publish or redistribute the repo.
+This is a personal learning project. The code is MIT licensed. See [Asset credits](#asset-credits) for the models.
+
+![Title screen](docs/screenshots/title.png)
+
+| By the cabin | Facing the stag |
+| --- | --- |
+| ![The hunter by the campfire outside the cabin](docs/screenshots/cabin.png) | ![The hunter aiming at the stag](docs/screenshots/stag.png) |
+
+The gun, rocks and rabbits in these shots are placeholder shapes. See the credits below.
 
 ## Game design
 

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Forest Hunter: a one-level isometric 3D game, built in Xogot (Godot 4.7) in GDScript. A private learning project.
+Forest Hunter: a one-level isometric 3D game, built in Xogot (Godot 4.7) in GDScript. A personal learning project.
 Read `docs/game-design.html` for the design. This file covers how to work in the project.
 
 ## Working with Xogot
@@ -150,12 +150,12 @@ Read `docs/game-design.html` for the design. This file covers how to work in the
 
 ## Git
 
-- Remote: `github.com/tomdiz/forest-hunter` (private, the personal account `tomdiz`).
+- Remote: `github.com/tomdiz/forest-hunter-public` (public copy, the personal account `tomdiz`).
 - Git's global credential helper is broken on this machine (it points to a missing `git-credential-manager`).
   Push with: `git -c credential.helper= -c credential.helper='!gh auth git-credential' push`.
   Check `gh auth status` first: the active account must be `tomdiz`, not the work account.
 - Commit messages end with the Claude co-author line. The user has asked for finished work to be committed and
-  pushed to this private repo, including model files, so do that after each working change.
+  pushed, so do that after each working change.
 
 ## Keep in sync
 
