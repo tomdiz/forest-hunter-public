@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://lodcu2q4wa4b"]
+
+[ext_resource type="Script" uid="uid://6ngwe6i6gwnj" path="res://scripts/critter.gd" id="1_1cftp"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_rabbit"]
+radius = 0.15
+height = 0.4
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dsq4s"]
+size = Vector3(0.3, 0.35, 0.5)
+
+[node name="Rabbit" type="CharacterBody3D" unique_id=1953220024]
+collision_layer = 2
+script = ExtResource("1_1cftp")
+walk_speed = 1.2
+run_speed = 4.5
+wander_radius = 5.0
+flee_range = 6.0
+hops = true
+
+[node name="Model" type="MeshInstance3D" parent="." unique_id=1414978361]
+transform = Transform3D(1, 0, 0, 0, 0, -1, 0, 1, 0, 0, 0.18, 0)
+mesh = SubResource("CapsuleMesh_rabbit")
+
+[node name="Collision" type="CollisionShape3D" parent="." unique_id=111459252]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18, 0)
+shape = SubResource("BoxShape3D_dsq4s")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1404808453]
+radius = 0.4

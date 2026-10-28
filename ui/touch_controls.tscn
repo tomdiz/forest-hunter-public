@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://cqxgkys3wavt2"]
+
+[ext_resource type="Script" uid="uid://c6ach3hh4mwx4" path="res://scripts/touch_overlay.gd" id="1_edfuk"]
+
+[node name="TouchControls" type="CanvasLayer" unique_id=337888596]
+layer = 5
+
+[node name="Overlay" type="Control" parent="." unique_id=1445035608]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_edfuk")

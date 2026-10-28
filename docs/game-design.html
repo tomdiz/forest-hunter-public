@@ -1,0 +1,768 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forest Hunter Blueprint</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one long field-notes page. Sticky section nav, plan-view map up top, then logic, assets, build order. */
+:root {
+  --bg: #EDF0EA;
+  --surface: #F7F9F5;
+  --fg: #19271F;
+  --muted: #55655B;
+  --line: #CBD4C8;
+  --accent: #B8400A;
+  --accent-ink: #FFFFFF;
+  --river: #2D6C8A;
+  --forest: #2F5D3F;
+  --ground: #DCE3D4;
+  --eye: #D61F1F;
+  --good: #2E7D4F;
+  --warn: #A66A00;
+  --display: "Alfa Slab One", "Rockwell", Georgia, serif;
+  --body: "Source Sans 3", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1913; --surface: #15231B; --fg: #E4EAE1; --muted: #9AAB9F; --line: #2A3D31;
+    --accent: #F28B4B; --accent-ink: #1A0D04; --river: #5BA6C6; --forest: #4F8B63; --ground: #1B2C21;
+    --eye: #FF4545; --good: #6CC48D; --warn: #E0A93B; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1913; --surface: #15231B; --fg: #E4EAE1; --muted: #9AAB9F; --line: #2A3D31;
+  --accent: #F28B4B; --accent-ink: #1A0D04; --river: #5BA6C6; --forest: #4F8B63; --ground: #1B2C21;
+  --eye: #FF4545; --good: #6CC48D; --warn: #E0A93B; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.55;
+  padding-block: 0 64px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 980px; margin: 0 auto; }
+h1, h2 { font-family: var(--display); font-weight: 400; text-wrap: balance; letter-spacing: .01em; line-height: 1.1; }
+h1 { font-size: clamp(2rem, 6vw, 3.4rem); margin: 0 0 12px; }
+h2 { font-size: clamp(1.4rem, 3.4vw, 1.9rem); margin: 0 0 6px; }
+h3 { font-size: 1rem; margin: 0 0 4px; }
+p { margin: 0 0 12px; max-width: 68ch; }
+a { color: var(--accent); }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+code, pre { font-family: var(--mono); font-size: .85rem; }
+.eyebrow { font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+
+nav.sections {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg);
+  display: flex; gap: 6px 18px; flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid var(--line);
+}
+nav.sections a { text-decoration: none; color: var(--muted); font-weight: 600; font-size: .9rem; }
+nav.sections a:hover { color: var(--accent); }
+
+header.hero { padding: 36px 0 24px; display: grid; gap: 20px; grid-template-columns: 1.3fr 1fr; align-items: start; }
+.pitch-facts { display: grid; gap: 0; border: 1px solid var(--line); background: var(--surface); }
+.pitch-facts div { display: flex; justify-content: space-between; gap: 12px; padding: 9px 14px; border-bottom: 1px solid var(--line); }
+.pitch-facts div:last-child { border-bottom: 0; }
+.pitch-facts dt { color: var(--muted); font-size: .85rem; }
+.pitch-facts dd { margin: 0; font-weight: 600; text-align: right; }
+.pitch-facts { margin: 0; }
+
+section { padding: 36px 0 8px; scroll-margin-top: 56px; }
+.lede { color: var(--muted); margin-bottom: 18px; }
+
+.callout { border-left: 4px solid var(--warn); background: var(--surface); padding: 14px 16px; margin: 8px 0 18px; max-width: 76ch; }
+.callout strong { display: block; margin-bottom: 4px; }
+
+.map-box { background: var(--surface); border: 1px solid var(--line); padding: 10px; overflow-x: auto; }
+.map-box svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 12px; font-size: .88rem; color: var(--muted); }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.sw { width: 14px; height: 14px; display: inline-block; flex: none; }
+
+.cols { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.panel { background: var(--surface); border: 1px solid var(--line); padding: 16px; min-width: 0; }
+.panel p { font-size: .95rem; margin-bottom: 8px; }
+.panel ul { margin: 0; padding-left: 18px; font-size: .95rem; }
+.panel li { margin-bottom: 4px; }
+
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--mono); font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); white-space: nowrap; }
+td:first-child { font-weight: 600; }
+.tag { font-family: var(--mono); font-size: .72rem; padding: 2px 7px; border: 1px solid var(--line); white-space: nowrap; display: inline-block; }
+.tag.first { color: var(--good); border-color: var(--good); }
+.tag.later { color: var(--warn); border-color: var(--warn); }
+
+pre.code { background: var(--surface); border: 1px solid var(--line); padding: 14px 16px; overflow-x: auto; margin: 0; line-height: 1.5; }
+pre.mermaid { background: var(--surface); border: 1px solid var(--line); padding: 14px; overflow-x: auto; margin: 0; }
+
+ol.build { list-style: none; padding: 0; margin: 0; display: grid; gap: 0; counter-reset: step; border-top: 1px solid var(--line); }
+ol.build li { counter-increment: step; display: grid; grid-template-columns: 44px 1fr; gap: 4px 12px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+ol.build li::before { content: counter(step); font-family: var(--display); color: var(--accent); font-size: 1.5rem; line-height: 1.1; grid-row: span 2; }
+ol.build h3 { margin: 0; }
+ol.build p { margin: 0; font-size: .93rem; color: var(--muted); }
+ol.build .done { color: var(--fg); }
+ol.build .done b { color: var(--good); font-family: var(--mono); font-size: .75rem; letter-spacing: .06em; text-transform: uppercase; margin-right: 6px; }
+
+footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: .88rem; }
+
+@media (max-width: 720px) { header.hero { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+
+/* map colours come from tokens so both themes work */
+.m-ground { fill: var(--ground); } .m-river { stroke: var(--river); fill: none; }
+.m-tree { fill: var(--forest); } .m-path { stroke: var(--fg); fill: none; opacity: .55; }
+.m-cabin { fill: var(--muted); } .m-fire { fill: var(--accent); }
+.m-eye { fill: var(--eye); } .m-bunny { fill: var(--fg); } .m-hunter { fill: var(--accent); stroke: var(--bg); stroke-width: 2; }
+.m-label { fill: var(--fg); font: 600 12px var(--body); } .m-small { fill: var(--muted); font: 400 11px var(--mono); }
+.m-zone { fill: none; stroke: var(--eye); stroke-dasharray: 4 4; opacity: .7; }
+
+.m-valley { stroke: var(--line); fill: none; opacity: .55; }
+.m-rock { fill: var(--muted); opacity: .8; }
+.m-ammo { fill: var(--good); }
+.m-bridge { fill: #A5753F; stroke: var(--fg); stroke-width: 1; opacity: .95; }
+.m-fox { fill: #D9822B; } .m-deer { fill: #9A6A3A; } .m-rabbit { fill: var(--fg); }
+.m-cabin-box { fill: var(--muted); stroke: var(--fg); stroke-width: 1; }
+.status { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+.status ul { list-style: none; padding: 0; margin: 0; font-size: .95rem; }
+.status li { padding: 5px 0 5px 22px; position: relative; border-bottom: 1px solid var(--line); }
+.status li:last-child { border-bottom: 0; }
+.status li::before { content: ""; position: absolute; left: 2px; top: 11px; width: 10px; height: 10px; border: 2px solid var(--good); }
+.status .todo li::before { border-color: var(--warn); }
+.status li.done::before { background: var(--good); }
+.status h3 { margin-bottom: 8px; }
+.num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+</style>
+
+<div class="wrap">
+
+<nav class="sections" aria-label="Sections">
+  <a href="#status">Status</a><a href="#world">World</a><a href="#controls">Controls</a><a href="#logic">Game logic</a><a href="#assets">Assets</a><a href="#scene">Scene tree</a><a href="#build">Build order</a>
+</nav>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">Xogot prototype · playable one-level game</div>
+    <h1>Forest Hunter</h1>
+    <p>A hunter with a revolver follows a river through a pine forest, past a log cabin and its campfire, hunting the evil stag with glowing red eyes that hides around the map. Foxes, deer and rabbits wander the valley and run when the hunter gets close. The stag peeks out, stalks the hunter, charges, and retreats to a new hiding spot. Shoot it five times to win. Lose all three hearts and it's over.</p>
+    <p class="lede">Built as a first Godot project in Xogot, in GDScript, with free assets. This page describes the game as it is built now. The project is in a private GitHub repo.</p>
+  </div>
+  <dl class="pitch-facts">
+    <div><dt>Camera</dt><dd>3D isometric</dd></div>
+    <div><dt>Platforms</dt><dd>Mac, and iPhone (not tried on a device)</dd></div>
+    <div><dt>Input</dt><dd>Keyboard + mouse, or touch</dd></div>
+    <div><dt>Scope</dt><dd>One level, small prototype</dd></div>
+    <div><dt>Engine</dt><dd>Godot 4.7 in Xogot 1.7.5</dd></div>
+    <div><dt>Language</dt><dd>GDScript</dd></div>
+  </dl>
+</header>
+
+<section id="status">
+  <h2>Where it stands</h2>
+  <p class="lede">The core loop works from start to win or lose. A few things in the original plan are not built yet.</p>
+  <div class="status">
+    <div class="panel">
+      <h3>Working</h3>
+      <ul>
+        <li class="done">Isometric camera that follows the hunter</li>
+        <li class="done">WASD or arrow movement, with run animations</li>
+        <li class="done">Mouse aiming and a hitscan revolver with tracer and flash</li>
+        <li class="done">Touch controls: two thumb sticks and a reload button</li>
+        <li class="done">Three plank bridges to the far bank (one near the start), where some of the stag's hiding spots are</li>
+        <li class="done">Painted revolver held in the right hand, always pointing the way the hunter faces (a pistol and the original rifle are also in the code)</li>
+        <li class="done">Title screen over the live forest, shown once per run, with a camera glide into the game</li>
+        <li class="done">Options menu with separate Music and Effects volume sliders, remembered between runs</li>
+        <li class="done">Background music: a calm loop that crossfades to a tense one while the stag hunts you, and fades out for the end screens</li>
+        <li class="done">Sound effects: gunshot, reload, footsteps, stag, animals, pickups, campfire, forest ambience and win and lose stings</li>
+        <li class="done">Log cabin with a porch, glowing window, chimney smoke and a furnished room you can walk into</li>
+        <li class="done">Usable cabin props: a door that opens and shuts, a bed that restores your health once, a table with cartridges and a fireplace you can put out</li>
+        <li class="done">Pine-green trees with soft shadows, lit by a warm sun and cool ambient light</li>
+        <li class="done">Ammo, reload and an ammo box at the cabin</li>
+        <li class="done">River, forest, rocks, cabin and campfire</li>
+        <li class="done">Wandering foxes, deer and rabbits that flee and can be shot</li>
+        <li class="done">The stag: hide, peek, stalk, charge, retreat, die</li>
+        <li class="done">Stag finds its way with a navigation mesh</li>
+        <li class="done">HUD with hearts, ammo and stag health</li>
+        <li class="done">Win and lose screens with Play again</li>
+      </ul>
+    </div>
+    <div class="panel todo">
+      <h3>Not built or rough</h3>
+      <ul>
+        <li>Rabbits are a static model that hops in code, so they have no real animation</li>
+        <li>Animals only wander near where they start and do not react to gunshots</li>
+        <li>Touch controls are tested with simulated touches on the Mac only, not on a real iPhone</li>
+        <li>The revolver is held in one hand and swings with the arm. No recoil or reload animation</li>
+        <li>The cabin is made from simple shapes (logs are cylinders), so it is plain inside</li>
+        <li>A mute button for touch screens (M mutes the music on a keyboard)</li>
+        <li>The sound effects and music are simple synthesised sounds. They are good enough for a demo, but recorded audio would sound more natural</li>
+        <li>Only 24 of the planned 55 trees fit inside the walkable valley</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="world">
+  <h2>The world</h2>
+  <p class="lede">A Diablo-style walk: the river is the path, a valley about 22 m wide follows it, and dense pines wall in the sides. The map below is drawn from the real object positions in the level (plan view, about 83 m from west to east).</p>
+
+  <div class="map-box">
+    <svg viewBox="0 0 846 508" role="img" aria-label="Plan view of the built level: a river winding from the hunter's start at the left to the east end, with the cabin and campfire in the middle, five stag hiding spots, pine forest on both sides and rocks along the banks.">
+<defs><g id="pine"><polygon points="0,-9 5,1 -5,1" class="m-tree"/><polygon points="0,-5 6,6 -6,6" class="m-tree"/></g><g id="pine-s"><polygon points="0,-6 3.5,1 -3.5,1" class="m-tree"/><polygon points="0,-3 4.2,4 -4.2,4" class="m-tree"/></g></defs>
+<rect width="846" height="508" class="m-ground"/>
+<path d="M104.0 296.0 L120.8 294.4 L136.8 292.0 L153.6 288.0 L169.6 283.2 L184.8 276.8 L200.0 269.6 L214.4 262.4 L229.6 254.4 L244.8 248.0 L260.0 241.6 L275.2 237.6 L291.2 234.4 L308.0 232.8 L324.0 232.0 L340.8 233.6 L357.6 236.0 L373.6 240.8 L389.6 246.4 L404.0 252.8 L418.4 260.0 L433.6 267.2 L448.8 273.6 L464.0 278.4 L480.0 280.0 L496.8 278.4 L512.8 274.4 L528.8 268.0 L543.2 260.8 L556.8 252.0 L570.4 242.4 L583.2 232.0 L596.8 220.8 L609.6 210.4 L622.4 200.0 L636.0 191.2 L650.4 182.4 L665.6 175.2 L681.6 168.8 L696.8 163.2 L712.8 159.2 L729.6 155.2" class="m-valley" stroke-width="176" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M104.0 296.0 L120.8 294.4 L136.8 292.0 L153.6 288.0 L169.6 283.2 L184.8 276.8 L200.0 269.6 L214.4 262.4 L229.6 254.4 L244.8 248.0 L260.0 241.6 L275.2 237.6 L291.2 234.4 L308.0 232.8 L324.0 232.0 L340.8 233.6 L357.6 236.0 L373.6 240.8 L389.6 246.4 L404.0 252.8 L418.4 260.0 L433.6 267.2 L448.8 273.6 L464.0 278.4 L480.0 280.0 L496.8 278.4 L512.8 274.4 L528.8 268.0 L543.2 260.8 L556.8 252.0 L570.4 242.4 L583.2 232.0 L596.8 220.8 L609.6 210.4 L622.4 200.0 L636.0 191.2 L650.4 182.4 L665.6 175.2 L681.6 168.8 L696.8 163.2 L712.8 159.2 L729.6 155.2" class="m-river" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" opacity=".8"/>
+<use href="#pine-s" x="790.4" y="320.0"/>
+<use href="#pine-s" x="385.6" y="128.8"/>
+<use href="#pine-s" x="671.2" y="45.6"/>
+<use href="#pine-s" x="576.8" y="44.8"/>
+<use href="#pine-s" x="286.4" y="70.4"/>
+<use href="#pine-s" x="303.2" y="336.8"/>
+<use href="#pine-s" x="317.6" y="404.8"/>
+<use href="#pine-s" x="454.4" y="155.2"/>
+<use href="#pine-s" x="503.2" y="406.4"/>
+<use href="#pine-s" x="775.2" y="242.4"/>
+<use href="#pine-s" x="296.0" y="99.2"/>
+<use href="#pine-s" x="115.2" y="163.2"/>
+<use href="#pine-s" x="476.0" y="119.2"/>
+<use href="#pine-s" x="24.0" y="157.6"/>
+<use href="#pine-s" x="212.0" y="98.4"/>
+<use href="#pine-s" x="242.4" y="114.4"/>
+<use href="#pine-s" x="692.0" y="292.0"/>
+<use href="#pine-s" x="177.6" y="449.6"/>
+<use href="#pine-s" x="96.0" y="134.4"/>
+<use href="#pine-s" x="256.8" y="80.0"/>
+<use href="#pine-s" x="683.2" y="347.2"/>
+<use href="#pine-s" x="155.2" y="419.2"/>
+<use href="#pine-s" x="116.8" y="193.6"/>
+<use href="#pine-s" x="73.6" y="199.2"/>
+<use href="#pine-s" x="402.4" y="446.4"/>
+<use href="#pine-s" x="491.2" y="452.0"/>
+<use href="#pine-s" x="469.6" y="393.6"/>
+<use href="#pine-s" x="610.4" y="36.0"/>
+<use href="#pine-s" x="712.8" y="326.4"/>
+<use href="#pine-s" x="591.2" y="383.2"/>
+<use href="#pine-s" x="201.6" y="156.8"/>
+<use href="#pine-s" x="412.8" y="129.6"/>
+<use href="#pine-s" x="449.6" y="391.2"/>
+<use href="#pine-s" x="58.4" y="123.2"/>
+<use href="#pine-s" x="128.8" y="152.0"/>
+<use href="#pine-s" x="462.4" y="445.6"/>
+<use href="#pine-s" x="544.8" y="423.2"/>
+<use href="#pine-s" x="509.6" y="54.4"/>
+<use href="#pine-s" x="330.4" y="363.2"/>
+<use href="#pine-s" x="470.4" y="145.6"/>
+<use href="#pine-s" x="822.4" y="221.6"/>
+<use href="#pine-s" x="60.8" y="484.0"/>
+<use href="#pine-s" x="331.2" y="112.0"/>
+<use href="#pine-s" x="736.0" y="336.8"/>
+<use href="#pine-s" x="470.4" y="467.2"/>
+<use href="#pine-s" x="588.0" y="356.8"/>
+<use href="#pine-s" x="28.8" y="192.8"/>
+<use href="#pine-s" x="496.8" y="116.8"/>
+<use href="#pine-s" x="723.2" y="59.2"/>
+<use href="#pine-s" x="42.4" y="453.6"/>
+<use href="#pine-s" x="194.4" y="128.8"/>
+<use href="#pine-s" x="533.6" y="59.2"/>
+<use href="#pine-s" x="203.2" y="446.4"/>
+<use href="#pine-s" x="418.4" y="378.4"/>
+<use href="#pine-s" x="376.8" y="403.2"/>
+<use href="#pine-s" x="389.6" y="64.8"/>
+<use href="#pine-s" x="354.4" y="380.0"/>
+<use href="#pine-s" x="328.8" y="85.6"/>
+<use href="#pine-s" x="783.2" y="293.6"/>
+<use href="#pine-s" x="701.6" y="357.6"/>
+<use href="#pine-s" x="745.6" y="254.4"/>
+<use href="#pine-s" x="759.2" y="331.2"/>
+<use href="#pine-s" x="109.6" y="445.6"/>
+<use href="#pine-s" x="384.0" y="380.0"/>
+<use href="#pine-s" x="133.6" y="129.6"/>
+<use href="#pine-s" x="428.0" y="454.4"/>
+<use href="#pine-s" x="67.2" y="424.8"/>
+<use href="#pine-s" x="216.8" y="131.2"/>
+<use href="#pine-s" x="240.0" y="444.8"/>
+<use href="#pine-s" x="129.6" y="394.4"/>
+<use href="#pine-s" x="133.6" y="468.8"/>
+<use href="#pine-s" x="270.4" y="48.8"/>
+<use href="#pine-s" x="487.2" y="413.6"/>
+<use href="#pine-s" x="647.2" y="24.0"/>
+<use href="#pine-s" x="604.8" y="407.2"/>
+<use href="#pine-s" x="280.0" y="378.4"/>
+<use href="#pine-s" x="211.2" y="411.2"/>
+<use href="#pine-s" x="707.2" y="30.4"/>
+<use href="#pine-s" x="560.0" y="102.4"/>
+<use href="#pine-s" x="345.6" y="80.8"/>
+<use href="#pine-s" x="141.6" y="192.0"/>
+<use href="#pine-s" x="62.4" y="176.8"/>
+<use href="#pine-s" x="480.0" y="88.0"/>
+<use href="#pine-s" x="799.2" y="264.0"/>
+<use href="#pine-s" x="239.2" y="87.2"/>
+<use href="#pine-s" x="216.8" y="57.6"/>
+<use href="#pine-s" x="724.8" y="276.0"/>
+<use href="#pine-s" x="806.4" y="84.8"/>
+<use href="#pine-s" x="84.8" y="172.8"/>
+<use href="#pine-s" x="748.0" y="24.8"/>
+<use href="#pine-s" x="128.8" y="95.2"/>
+<use href="#pine-s" x="552.8" y="61.6"/>
+<use href="#pine-s" x="392.0" y="108.0"/>
+<use href="#pine-s" x="368.0" y="129.6"/>
+<use href="#pine-s" x="512.8" y="452.0"/>
+<use href="#pine-s" x="511.2" y="74.4"/>
+<use href="#pine-s" x="544.8" y="448.8"/>
+<use href="#pine-s" x="74.4" y="108.0"/>
+<use href="#pine-s" x="624.8" y="424.0"/>
+<use href="#pine-s" x="112.0" y="476.0"/>
+<use href="#pine-s" x="27.2" y="376.8"/>
+<use href="#pine-s" x="538.4" y="106.4"/>
+<use href="#pine-s" x="298.4" y="360.0"/>
+<use href="#pine-s" x="604.0" y="93.6"/>
+<use href="#pine-s" x="457.6" y="116.8"/>
+<use href="#pine-s" x="531.2" y="392.8"/>
+<use href="#pine-s" x="696.0" y="46.4"/>
+<use href="#pine-s" x="263.2" y="449.6"/>
+<use href="#pine-s" x="252.0" y="377.6"/>
+<use href="#pine-s" x="450.4" y="372.8"/>
+<use href="#pine-s" x="364.0" y="56.0"/>
+<use href="#pine-s" x="477.6" y="434.4"/>
+<use href="#pine-s" x="79.2" y="390.4"/>
+<use href="#pine-s" x="439.2" y="67.2"/>
+<use href="#pine-s" x="323.2" y="68.0"/>
+<use href="#pine-s" x="360.8" y="355.2"/>
+<use href="#pine-s" x="86.4" y="462.4"/>
+<use href="#pine-s" x="159.2" y="458.4"/>
+<use href="#pine-s" x="504.0" y="381.6"/>
+<use href="#pine-s" x="563.2" y="369.6"/>
+<use href="#pine-s" x="610.4" y="76.0"/>
+<use href="#pine-s" x="214.4" y="468.8"/>
+<use href="#pine-s" x="53.6" y="195.2"/>
+<use href="#pine-s" x="247.2" y="421.6"/>
+<use href="#pine-s" x="163.2" y="90.4"/>
+<use href="#pine-s" x="543.2" y="129.6"/>
+<use href="#pine-s" x="637.6" y="335.2"/>
+<use href="#pine-s" x="617.6" y="354.4"/>
+<use href="#pine-s" x="797.6" y="234.4"/>
+<use href="#pine-s" x="418.4" y="80.8"/>
+<use href="#pine-s" x="288.0" y="397.6"/>
+<use href="#pine-s" x="254.4" y="139.2"/>
+<use href="#pine-s" x="339.2" y="396.8"/>
+<use href="#pine-s" x="787.2" y="27.2"/>
+<use href="#pine-s" x="154.4" y="395.2"/>
+<use href="#pine-s" x="808.0" y="284.8"/>
+<use href="#pine-s" x="299.2" y="413.6"/>
+<use href="#pine-s" x="612.0" y="375.2"/>
+<use href="#pine-s" x="428.0" y="148.0"/>
+<use href="#pine-s" x="280.0" y="121.6"/>
+<use href="#pine-s" x="269.6" y="419.2"/>
+<use href="#pine-s" x="816.0" y="317.6"/>
+<use href="#pine-s" x="456.0" y="76.8"/>
+<use href="#pine-s" x="436.8" y="92.8"/>
+<use href="#pine-s" x="695.2" y="332.0"/>
+<use href="#pine-s" x="812.8" y="36.0"/>
+<use href="#pine-s" x="726.4" y="304.8"/>
+<use href="#pine-s" x="299.2" y="384.0"/>
+<use href="#pine-s" x="152.0" y="440.8"/>
+<use href="#pine-s" x="227.2" y="151.2"/>
+<use href="#pine-s" x="656.8" y="357.6"/>
+<use href="#pine-s" x="41.6" y="116.0"/>
+<use href="#pine-s" x="235.2" y="53.6"/>
+<use href="#pine-s" x="720.0" y="347.2"/>
+<use href="#pine-s" x="230.4" y="383.2"/>
+<use href="#pine-s" x="45.6" y="151.2"/>
+<use href="#pine-s" x="566.4" y="400.8"/>
+<use href="#pine-s" x="112.8" y="116.8"/>
+<use href="#pine-s" x="820.8" y="253.6"/>
+<use href="#pine-s" x="213.6" y="79.2"/>
+<use href="#pine-s" x="636.0" y="379.2"/>
+<use href="#pine-s" x="476.0" y="178.4"/>
+<use href="#pine-s" x="46.4" y="396.0"/>
+<use href="#pine-s" x="673.6" y="389.6"/>
+<use href="#pine-s" x="593.6" y="60.8"/>
+<use href="#pine-s" x="439.2" y="128.8"/>
+<use href="#pine-s" x="627.2" y="405.6"/>
+<use href="#pine-s" x="759.2" y="41.6"/>
+<use href="#pine-s" x="524.0" y="428.0"/>
+<use href="#pine-s" x="521.6" y="40.0"/>
+<use href="#pine-s" x="416.8" y="63.2"/>
+<use href="#pine-s" x="353.6" y="429.6"/>
+<use href="#pine-s" x="382.4" y="360.8"/>
+<use href="#pine-s" x="305.6" y="42.4"/>
+<use href="#pine-s" x="178.4" y="396.8"/>
+<use href="#pine-s" x="504.8" y="469.6"/>
+<use href="#pine-s" x="774.4" y="263.2"/>
+<use href="#pine-s" x="152.0" y="154.4"/>
+<use href="#pine-s" x="196.0" y="110.4"/>
+<use href="#pine-s" x="39.2" y="220.0"/>
+<use href="#pine-s" x="480.0" y="68.8"/>
+<use href="#pine-s" x="155.2" y="136.0"/>
+<use href="#pine-s" x="589.6" y="440.8"/>
+<use href="#pine-s" x="362.4" y="92.0"/>
+<use href="#pine-s" x="744.0" y="286.4"/>
+<use href="#pine-s" x="187.2" y="76.0"/>
+<use href="#pine-s" x="405.6" y="405.6"/>
+<use href="#pine-s" x="669.6" y="67.2"/>
+<use href="#pine-s" x="658.4" y="299.2"/>
+<use href="#pine-s" x="116.0" y="411.2"/>
+<use href="#pine-s" x="175.2" y="480.0"/>
+<use href="#pine-s" x="610.4" y="331.2"/>
+<use href="#pine-s" x="768.0" y="303.2"/>
+<use href="#pine-s" x="72.8" y="407.2"/>
+<use href="#pine-s" x="624.8" y="88.0"/>
+<use href="#pine-s" x="562.4" y="419.2"/>
+<use href="#pine-s" x="400.0" y="146.4"/>
+<use href="#pine-s" x="86.4" y="419.2"/>
+<use href="#pine-s" x="586.4" y="98.4"/>
+<use href="#pine-s" x="554.4" y="37.6"/>
+<use href="#pine-s" x="498.4" y="92.8"/>
+<use href="#pine-s" x="523.2" y="123.2"/>
+<use href="#pine-s" x="650.4" y="414.4"/>
+<use href="#pine-s" x="799.2" y="49.6"/>
+<use href="#pine-s" x="590.4" y="29.6"/>
+<use href="#pine-s" x="534.4" y="148.0"/>
+<use href="#pine-s" x="639.2" y="76.8"/>
+<use href="#pine-s" x="236.8" y="359.2"/>
+<use href="#pine-s" x="90.4" y="189.6"/>
+<use href="#pine-s" x="91.2" y="483.2"/>
+<use href="#pine-s" x="194.4" y="384.0"/>
+<use href="#pine-s" x="308.0" y="83.2"/>
+<use href="#pine-s" x="221.6" y="436.8"/>
+<use href="#pine-s" x="358.4" y="109.6"/>
+<use href="#pine-s" x="192.0" y="472.0"/>
+<use href="#pine-s" x="313.6" y="373.6"/>
+<use href="#pine-s" x="280.0" y="89.6"/>
+<use href="#pine-s" x="100.8" y="393.6"/>
+<use href="#pine-s" x="659.2" y="324.0"/>
+<use href="#pine-s" x="412.0" y="103.2"/>
+<use href="#pine-s" x="750.4" y="311.2"/>
+<use href="#pine-s" x="154.4" y="114.4"/>
+<use href="#pine-s" x="274.4" y="350.4"/>
+<use href="#pine-s" x="380.8" y="421.6"/>
+<use href="#pine-s" x="324.0" y="341.6"/>
+<use href="#pine-s" x="348.8" y="339.2"/>
+<use href="#pine-s" x="641.6" y="40.8"/>
+<use href="#pine-s" x="407.2" y="424.0"/>
+<use href="#pine-s" x="252.8" y="58.4"/>
+<use href="#pine" x="139.2" y="232.8"/>
+<use href="#pine" x="614.4" y="146.4"/>
+<use href="#pine" x="236.8" y="201.6"/>
+<use href="#pine" x="653.6" y="116.8"/>
+<use href="#pine" x="705.6" y="93.6"/>
+<use href="#pine" x="615.2" y="267.2"/>
+<use href="#pine" x="579.2" y="290.4"/>
+<use href="#pine" x="332.8" y="174.4"/>
+<use href="#pine" x="293.6" y="302.4"/>
+<use href="#pine" x="754.4" y="209.6"/>
+<use href="#pine" x="561.6" y="178.4"/>
+<use href="#pine" x="380.8" y="304.0"/>
+<use href="#pine" x="257.6" y="307.2"/>
+<use href="#pine" x="183.2" y="216.8"/>
+<use href="#pine" x="77.6" y="254.4"/>
+<use href="#pine" x="715.2" y="209.6"/>
+<use href="#pine" x="664.0" y="225.6"/>
+<use href="#pine" x="452.8" y="332.0"/>
+<use href="#pine" x="188.8" y="321.6"/>
+<use href="#pine" x="764.8" y="100.8"/>
+<use href="#pine" x="336.0" y="288.8"/>
+<use href="#pine" x="532.0" y="344.0"/>
+<use href="#pine" x="473.6" y="230.4"/>
+<use href="#pine" x="73.6" y="343.2"/>
+<circle cx="560.0" cy="215.2" r="4.0" class="m-rock"/>
+<circle cx="598.4" cy="182.4" r="4.0" class="m-rock"/>
+<circle cx="114.4" cy="324.8" r="4.0" class="m-rock"/>
+<circle cx="358.4" cy="264.0" r="4.0" class="m-rock"/>
+<circle cx="205.6" cy="302.4" r="4.0" class="m-rock"/>
+<circle cx="296.0" cy="202.4" r="4.0" class="m-rock"/>
+<circle cx="578.4" cy="268.0" r="4.0" class="m-rock"/>
+<circle cx="344.8" cy="259.2" r="4.0" class="m-rock"/>
+<circle cx="623.2" cy="239.2" r="4.0" class="m-rock"/>
+<circle cx="296.8" cy="208.0" r="4.0" class="m-rock"/>
+<circle cx="316.0" cy="263.2" r="4.0" class="m-rock"/>
+<circle cx="303.2" cy="264.0" r="4.0" class="m-rock"/>
+<circle cx="578.4" cy="268.0" r="4.0" class="m-rock"/>
+<circle cx="679.2" cy="136.8" r="4.0" class="m-rock"/>
+<circle cx="698.4" cy="136.0" r="4.0" class="m-rock"/>
+<circle cx="438.4" cy="238.4" r="4.0" class="m-rock"/>
+<circle cx="315.2" cy="203.2" r="4.0" class="m-rock"/>
+<circle cx="564.0" cy="278.4" r="4.0" class="m-rock"/>
+<circle cx="221.6" cy="293.6" r="4.0" class="m-rock"/>
+<circle cx="634.4" cy="229.6" r="4.0" class="m-rock"/>
+<circle cx="384.8" cy="276.8" r="4.0" class="m-rock"/>
+<circle cx="224.8" cy="224.0" r="4.0" class="m-rock"/>
+<circle cx="521.6" cy="237.6" r="4.0" class="m-rock"/>
+<g transform="translate(404.0 181.6) rotate(20.1)"><rect x="-20.0" y="-16.0" width="40" height="32" class="m-cabin-box"/></g>
+<g transform="translate(275.2 237.6) rotate(-103.7)"><rect x="-42.4" y="-9.6" width="84.8" height="19.2" class="m-bridge"/></g>
+<g transform="translate(496.8 278.4) rotate(-99.7)"><rect x="-42.4" y="-9.6" width="84.8" height="19.2" class="m-bridge"/></g>
+<g transform="translate(153.6 288.0) rotate(-105.4)"><rect x="-42.4" y="-9.6" width="84.8" height="19.2" class="m-bridge"/></g>
+<circle cx="388.8" cy="218.4" r="5" class="m-fire"/>
+<circle cx="388.8" cy="218.4" r="24" fill="none" stroke="var(--accent)" stroke-dasharray="2 4" opacity=".7"/>
+<rect x="410.4" y="207.2" width="8" height="8" class="m-ammo"/>
+<circle cx="217.6" cy="328.0" r="26" class="m-zone"/><circle cx="213.6" cy="326.0" r="2.6" class="m-eye"/><circle cx="221.6" cy="326.0" r="2.6" class="m-eye"/><text x="217.6" y="296" text-anchor="middle" class="m-small">spot 1</text>
+<circle cx="293.6" cy="173.6" r="26" class="m-zone"/><circle cx="289.6" cy="171.6" r="2.6" class="m-eye"/><circle cx="297.6" cy="171.6" r="2.6" class="m-eye"/><text x="293.6" y="142" text-anchor="middle" class="m-small">spot 2</text>
+<circle cx="418.4" cy="326.4" r="26" class="m-zone"/><circle cx="414.4" cy="324.4" r="2.6" class="m-eye"/><circle cx="422.4" cy="324.4" r="2.6" class="m-eye"/><text x="418.4" y="295" text-anchor="middle" class="m-small">spot 3</text>
+<circle cx="518.4" cy="205.6" r="26" class="m-zone"/><circle cx="514.4" cy="203.6" r="2.6" class="m-eye"/><circle cx="522.4" cy="203.6" r="2.6" class="m-eye"/><text x="518.4" y="174" text-anchor="middle" class="m-small">spot 4</text>
+<circle cx="696.8" cy="226.4" r="26" class="m-zone"/><circle cx="692.8" cy="224.4" r="2.6" class="m-eye"/><circle cx="700.8" cy="224.4" r="2.6" class="m-eye"/><text x="696.8" y="195" text-anchor="middle" class="m-small">spot 5</text>
+<circle cx="595.2" cy="164.8" r="4" class="m-fox"/>
+<circle cx="350.4" cy="281.6" r="4" class="m-fox"/>
+<circle cx="591.2" cy="272.8" r="4" class="m-fox"/>
+<circle cx="646.4" cy="260.8" r="5" class="m-deer"/>
+<circle cx="603.2" cy="298.4" r="5" class="m-deer"/>
+<circle cx="676.8" cy="120.8" r="5" class="m-deer"/>
+<circle cx="323.2" cy="300.8" r="2.5" class="m-rabbit"/>
+<circle cx="306.4" cy="283.2" r="2.5" class="m-rabbit"/>
+<circle cx="312.8" cy="290.4" r="2.5" class="m-rabbit"/>
+<circle cx="369.6" cy="293.6" r="2.5" class="m-rabbit"/>
+<circle cx="364.0" cy="277.6" r="2.5" class="m-rabbit"/>
+<circle cx="368.8" cy="279.2" r="2.5" class="m-rabbit"/>
+<circle cx="172.8" cy="236.0" r="2.5" class="m-rabbit"/>
+<circle cx="164.0" cy="218.4" r="2.5" class="m-rabbit"/>
+<circle cx="140.8" cy="347.2" r="8" class="m-hunter"/><text x="140.8" y="371.2" text-anchor="middle" class="m-label">Hunter starts</text>
+<text x="696.8" y="268" text-anchor="middle" class="m-label">Stag starts at spot 5</text>
+<text x="404.0" y="156" text-anchor="middle" class="m-label">Cabin + campfire</text>
+</svg>
+    <div class="legend">
+      <span><i class="sw" style="background:var(--accent);border-radius:50%"></i>Hunter start / campfire</span>
+      <span><i class="sw" style="background:var(--eye);border-radius:50%"></i>Stag hiding spot (red eyes)</span>
+      <span><i class="sw" style="background:var(--river);opacity:.8"></i>River (cross it on a bridge)</span>
+      <span><i class="sw" style="background:var(--line)"></i>Walkable valley</span>
+      <span><i class="sw" style="background:var(--forest)"></i>Pine forest</span>
+      <span><i class="sw" style="background:var(--muted);opacity:.8;border-radius:50%"></i>Rocks</span>
+      <span><i class="sw" style="background:#A5753F"></i>Plank bridge</span>
+      <span><i class="sw" style="background:var(--good)"></i>Ammo box</span>
+      <span><i class="sw" style="background:#D9822B;border-radius:50%"></i>Fox</span>
+      <span><i class="sw" style="background:#9A6A3A;border-radius:50%"></i>Deer</span>
+      <span><i class="sw" style="background:var(--fg);border-radius:50%"></i>Rabbit</span>
+    </div>
+  </div>
+  <p style="margin-top:14px;color:var(--muted);font-size:.93rem">The river blocks movement except at three plank bridges, one near the start, which the stag uses too. Past each end wall the water carries on (about 34 m) so it never stops in view. Invisible walls 11 m from the river keep the hunter in the valley. The level has 230 pines behind the walls, 24 inside the valley with solid trunks, 23 rocks along the banks, bushes, grass, stumps and logs.</p>
+</section>
+
+<section id="controls">
+  <h2>Controls and movement</h2>
+  <p class="lede">Move and aim are separate: you can run one way while facing another. The run animation changes to match (forward, backward or side step). Touch controls feed the same input actions as the keyboard, so movement works the same on both.</p>
+  <div class="cols">
+    <div class="panel">
+      <h3>Mac</h3>
+      <ul>
+        <li><b>WASD / arrows</b>: move, relative to the screen</li>
+        <li><b>Mouse</b>: aim. The hunter turns to face the cursor</li>
+        <li><b>Left click or Space</b>: fire. Hold to keep firing</li>
+        <li><b>R</b>: reload</li>
+        <li><b>E</b>: use what you are standing next to (a prompt appears at the bottom of the screen)</li>
+        <li><b>M</b>: mute or unmute the music</li>
+        <li><b>Esc</b> or the Options button: open the volume menu (pauses the game)</li>
+        <li><b>Enter</b> or click Play: start from the title screen, and Play again on the end screen</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>iPhone (touch)</h3>
+      <ul>
+        <li><b>Left half of the screen</b>: a floating stick that moves the hunter</li>
+        <li><b>Right half</b>: a floating stick that aims. Push it out past 40% and the revolver fires, and the knob turns orange</li>
+        <li><b>R button</b>, bottom right: reload</li>
+        <li><b>E button</b>, above R: appears when something is in reach</li>
+        <li><b>Options</b>, top right: open the volume menu</li>
+        <li><b>Tap anywhere</b> on the title screen to start, and on the end screen to play again</li>
+        <li>The sticks appear only when the device has a touch screen. To see them on a Mac, turn on <code>always_show</code> on the touch overlay</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Isometric camera</h3>
+      <ul>
+        <li>Orthogonal Camera3D, turned 45° and tilted 35° down, about 10 m of the level visible across</li>
+        <li>Rides on a rig that follows the hunter with a short, smooth lag</li>
+        <li>Input is turned 45° so "up" goes up the screen</li>
+      </ul>
+    </div>
+  </div>
+  <h3 style="margin:22px 0 8px">Movement and aiming, in GDScript</h3>
+  <pre class="code">func _physics_process(delta: float) -> void:
+	var input := Input.get_vector("move_left", "move_right", "move_up", "move_down")
+	var dir := Vector3(input.x, 0.0, input.y).rotated(Vector3.UP, deg_to_rad(CAMERA_YAW))
+	velocity.x = dir.x * SPEED          # SPEED = 5.0 metres per second
+	velocity.z = dir.z * SPEED
+	move_and_slide()
+
+	# Face the mouse: a ray from the camera through the cursor, cut at chest height.
+	var aim := _aim_direction()
+	if aim != Vector3.ZERO:
+		model.rotation.y = lerp_angle(model.rotation.y, atan2(aim.x, aim.z), TURN_SPEED * delta)</pre>
+</section>
+
+<section id="logic">
+  <h2>Game logic</h2>
+  <p class="lede">Five parts: the hunter, the shot, the ammo, the wandering animals and the stag. All numbers below are the values in the scripts, so they are easy to tune.</p>
+
+  <div class="cols">
+    <div class="panel">
+      <h3>Hunter</h3>
+      <ul>
+        <li>3 hearts, walks at 5 m/s</li>
+        <li>Blocked by the river, the valley walls, rocks and tree trunks</li>
+        <li>At 0 hearts he falls and the game-over screen follows</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Revolver</h3>
+      <ul>
+        <li>Hitscan: one ray from the muzzle, 40 m long, 4 shots a second</li>
+        <li>A short yellow tracer and an orange flash of light on each shot</li>
+        <li>The first thing the ray hits takes the damage, if it has a <code>take_damage</code> method. That includes the animals</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Wandering animals</h3>
+      <ul>
+        <li>3 foxes, 3 deer and 8 rabbits (in small groups), placed along the valley</li>
+        <li>Each strolls to random spots within a few metres of where it started, pauses, and walks on. Animated ones play Walk, Idle or Eating</li>
+        <li>Within 6 to 9 m of the hunter they run (Gallop, or faster hops), and calm down again about 4 m beyond that</li>
+        <li>One shot kills them. Foxes and deer play Death, then vanish. Rabbits just vanish</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Ammo</h3>
+      <ul>
+        <li>6 rounds in the revolver (one per chamber), 24 in reserve</li>
+        <li>R reloads in 1.5 s, and it reloads by itself when empty. No shooting while reloading</li>
+        <li>An ammo box by the cabin door gives +12 once</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin:24px 0 8px">Hunter animations</h3>
+  <div class="panel">
+    <ul><li><b>Standing:</b> Idle_Gun_Pointing</li><li><b>Moving:</b> Run, Run_Back, Run_Left or Run_Right, chosen by the angle between walking and facing: within 60° is forward, beyond 120° is backward, the rest is a side step</li>
+    <li><b>Dying:</b> Death</li></ul>
+  </div>
+
+  <h3 style="margin:24px 0 8px">The stag</h3>
+  <p>It has 5 hit points and hides at one of 5 spots. Its glowing red eyes show through the trees, so the player has a hint of where to look before it moves.</p>
+  <pre class="mermaid">
+stateDiagram-v2
+    [*] --> Hidden
+    Hidden --> Peek: hunter within 12 m for 2 s
+    Peek --> Stalk: after 3 s
+    Stalk --> Charge: hunter within 5 m
+    Charge --> Retreat: touches the hunter
+    Charge --> Retreat: shot
+    Hidden --> Stalk: shot
+    Peek --> Stalk: shot
+    Retreat --> Hidden: reached a spot 10 m or more from the hunter
+    Hidden --> Dead: 0 hit points
+    Peek --> Dead: 0 hit points
+    Stalk --> Dead: 0 hit points
+    Charge --> Dead: 0 hit points
+    Retreat --> Dead: 0 hit points
+    Dead --> [*]
+  </pre>
+  <div class="cols" style="margin-top:16px">
+    <div class="panel"><h3>Stag animations for each state</h3>
+      <ul><li><b>Hidden:</b> Idle_Headlow</li><li><b>Peek:</b> Idle, facing the hunter</li><li><b>Stalk:</b> Walk at 2 m/s</li>
+      <li><b>Charge:</b> Gallop at 7 m/s. A touch costs the hunter one heart</li><li><b>Retreat:</b> Gallop to another spot</li>
+      <li><b>Hit by a shot:</b> a half-second stun with Idle_HitReact1 or 2</li><li><b>Dead:</b> Death, and the eyes go out</li></ul></div>
+    <div class="panel"><h3>How it gets around</h3>
+      <p>The level has a baked navigation mesh, built from the colliders (river, walls, rocks, trunks), and the stag follows it with a NavigationAgent3D. It walks around obstacles instead of through them.</p></div>
+  </div>
+
+  <h3 style="margin:24px 0 8px">Inside the cabin</h3>
+  <p>Walk up to a prop and a prompt shows at the bottom of the screen. Press E (or tap the E button) to use it.</p>
+  <div class="cols">
+    <div class="panel"><h3>Door</h3><p>Opens and shuts. A shut door blocks the hunter, the stag and the animals, and the stag gives up charging at it after 6 seconds and retreats. The door will not shut on you while you stand in the doorway, and the stag can still hit you from just outside if you stand next to it.</p></div>
+    <div class="panel"><h3>Bed</h3><p>Sleep for a moment (the screen fades to black) to get all your hearts back. It works once, and only if you are hurt.</p></div>
+    <div class="panel"><h3>Table</h3><p>Take a box of cartridges for 6 more rounds. Once only.</p></div>
+    <div class="panel"><h3>Fireplace</h3><p>Put the fire out or light it again. It only changes the light and the glow of the embers.</p></div>
+  </div>
+
+  <div class="cols" style="margin-top:16px">
+    <div class="panel"><h3>Win</h3><p>The stag's 5 hit points reach 0. After 1.6 s a gold "YOU GOT IT" screen appears with a Play again button.</p></div>
+    <div class="panel"><h3>Lose</h3><p>The hunter's 3 hearts are gone. After 1.6 s a red "GAME OVER" screen appears with the same button. Play again reloads the level.</p></div>
+    <div class="panel"><h3>HUD</h3><p>Hearts top left, stag health bar top center, ammo bottom left with "RELOADING" while it reloads.</p></div>
+  </div>
+</section>
+
+<section id="assets">
+  <h2>Assets in use</h2>
+  <p class="lede">Everything below is in the project's <code>assets/</code> folder. Licenses are noted as found in each download. This public copy leaves out packs that could not be redistributed.</p>
+
+  <div class="scroll"><table>
+    <thead><tr><th>Used for</th><th>Asset and file</th><th>License</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Hunter</td><td>Quaternius Ultimate Modular Men, <code>Adventurer.gltf</code></td><td><span class="tag first">CC0</span></td><td>Rigged, with the run, idle-gun and death clips used above.</td></tr>
+      <tr><td>The stag</td><td>Quaternius Ultimate Animated Animals, <code>Stag.gltf</code></td><td><span class="tag first">CC0</span></td><td>Scaled to 0.6. Red eyes are two emissive spheres plus a red light on the head bone.</td></tr>
+      <tr><td>Foxes and deer</td><td>Quaternius Ultimate Animated Animals, <code>Fox.gltf</code> and <code>Deer.gltf</code></td><td><span class="tag first">CC0</span></td><td>Scaled to 0.2 and 0.35. Deer has no antlers, so it can't be mistaken for the stag.</td></tr>
+      <tr><td>Pine trees</td><td>Kenney Nature Kit: <code>tree_pineTallA</code> to <code>D</code>, <code>pineDefaultA/B</code>, <code>pineSmallA/B</code></td><td><span class="tag first">Kenney (License.txt in the zip)</span></td><td>Scaled 3 to 4.6 times. Backdrop trees have no collision. Valley trees have a trunk collider. The models import fully metallic (which renders black) and in a teal palette, so <code>scripts/level.gd</code> makes them matte and recolours them to pine green and brown.</td></tr>
+      <tr><td>Bushes, grass, stumps, logs</td><td>Kenney Nature Kit: <code>plant_bush</code>, <code>plant_bushLarge</code>, <code>grass_large</code>, <code>stump_old</code>, <code>log</code>, <code>log_large</code></td><td><span class="tag first">Kenney</span></td><td>Scattered through the valley.</td></tr>
+      <tr><td>Gun, rocks, rabbits</td><td>Placeholder box, flattened spheres and a capsule, built in the project</td><td><span class="tag first">ours</span></td><td>The original models could not be redistributed. Replace them with your own.</td></tr>
+      <tr><td>Campfire, barrel, ammo box, signpost</td><td>Kenney Survival Kit: <code>campfire-pit</code>, <code>barrel</code>, <code>box-large</code>, <code>signpost</code></td><td><span class="tag first">Kenney</span></td><td>The pack has no log cabin, only open wooden frames. It also needs its <code>Textures/colormap.png</code>.</td></tr>
+      <tr><td>Music</td><td>Composed in code by <code>tools/gen_music.py</code> into <code>audio/music_calm.wav</code> and <code>music_tense.wav</code></td><td><span class="tag first">ours</span></td><td>Two loops in A minor. Calm (29 s): a slow pad, deep bass and a sparse echoing melody. Tense (20 s): a heartbeat, pulsing bass, a semitone drone and a rising tremolo. Both repeat without a seam.</td></tr>
+      <tr><td>Sound effects</td><td>Synthesised by <code>tools/gen_sounds.py</code> into <code>audio/*.wav</code></td><td><span class="tag first">ours</span></td><td>No recorded or downloaded audio, so there are no licenses to track. Run the script to regenerate them. They are simple tones and filtered noise.</td></tr>
+      <tr><td>Cabin</td><td>Built in the level from boxes</td><td><span class="tag first">ours</span></td><td>Stacked log walls with interlocking corners, a door and windows, a gable roof, a stone chimney with smoke, a porch with a bench, and inside a bed, table, stools and a fireplace. Made from cylinders and boxes. The collision is still the simple walls from before.</td></tr>
+      <tr><td>River, fire, tracer, flash</td><td>Built in Xogot from simple meshes, particles and lights</td><td><span class="tag first">ours</span></td><td>The river is flat blue boxes along a curve, with a collision block. The three plank bridges are boxes too, each with a ramp at both ends and a rail.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3 style="margin:24px 0 8px">Downloaded but not used yet</h3>
+  <div class="panel"><ul>
+    <li><b>Ultimate Animated Animals:</b> Wolf, Husky, Shiba Inu, Horse, Cow and others. Only the Stag, Fox and Deer are in the project.</li>
+    <li><b>Bestiary Dungeon Monsters Kit (free):</b> only an Imp and a Puglin. Not used.</li>
+  </ul></div>
+</section>
+
+<section id="scene">
+  <h2>Scene tree</h2>
+  <p class="lede">The level is <code>scenes/level.tscn</code>, set as the project's main scene. The hunter, camera rig, stag and HUD are separate scenes that the level instances. <code>scenes/test_hunter.tscn</code> is an older test scene.</p>
+<pre class="code">Level (Node3D)                          scenes/level.tscn
+├─ World                  NavigationRegion3D, with the baked navigation mesh
+│  ├─ Ground              StaticBody3D + green box
+│  ├─ River               flat blue boxes along the curve
+│  ├─ RiverBlock          StaticBody3D, stops the hunter at the bank (with a gap at each bridge)
+│  ├─ Bridge1 to Bridge3  plank footbridges across the river
+│  ├─ BoundaryWalls       StaticBody3D, invisible walls 11 m from the river
+│  ├─ Cabin               log walls, roof, chimney, porch, interior, props and the Campfire (scripts/cabin.gd)
+│  │  └─ Interactions     Door, Bed, Table, Fireplace: Area3D prompts (scripts/interactable.gd)
+│  ├─ Backdrop            230 pines behind the walls
+│  ├─ BandTrees           valley pines, with TreeTrunks colliders
+│  ├─ Rocks               23 rocks, with RockBodies colliders
+│  ├─ Undergrowth         bushes, grass, stumps and logs
+│  └─ Cover1 to Cover5    boulder and pines at each hiding spot
+├─ HideSpots              5 × Marker3D in the group "hide_spots"
+├─ Player                 actors/player.tscn, CharacterBody3D, scripts/player.gd
+│  └─ Hunter              Adventurer model, with the weapon on a BoneAttachment3D (added at runtime)
+├─ CameraRig              actors/camera_rig.tscn, follows the Player
+│  └─ Camera3D            orthogonal, 45° yaw, 35° pitch
+├─ Stag                   actors/stag.tscn, CharacterBody3D, scripts/stag.gd
+│  ├─ Model               Stag model, with red eyes and a light on the head
+│  └─ NavigationAgent3D
+├─ Critters               3 Fox, 3 Deer, 8 Rabbit (actors/*.tscn, scripts/critter.gd)
+├─ AmmoPickup             Area3D, scripts/ammo_pickup.gd
+├─ Sun, WorldEnvironment  warm low sun, dusk ambient light
+├─ HUD                    ui/hud.tscn, CanvasLayer, scripts/hud.gd
+├─ TouchControls          ui/touch_controls.tscn, thumb sticks and reload, scripts/touch_overlay.gd
+├─ TitleScreen            ui/title.tscn, shown over the level until the player starts, scripts/title.gd
+└─ OptionsMenu            ui/options.tscn, volume sliders, scripts/options.gd (autoload Settings keeps the values)</pre>
+</section>
+
+<section id="build">
+  <h2>Build order</h2>
+  <p class="lede">The nine steps from the plan, with where each one ended up.</p>
+  <ol class="build">
+    <li><h3>Project, ground and camera</h3><p class="done"><b>Done</b>forest-hunter project, Forward+ renderer, isometric camera.</p></li>
+    <li><h3>Hunter walks</h3><p class="done"><b>Done</b>WASD with the camera following, plus mouse aiming and run animations.</p></li>
+    <li><h3>Dress the level</h3><p class="done"><b>Done</b>River, valley walls, pines, rocks, cabin and navigation mesh.</p></li>
+    <li><h3>Campfire</h3><p class="done"><b>Done</b>Particle flames and a flickering light.</p></li>
+    <li><h3>Shooting</h3><p class="done"><b>Done</b>Hitscan revolver, tracer, flash, ammo, reload and sound.</p></li>
+    <li><h3>Small animals</h3><p class="done"><b>Done</b>Foxes, deer and rabbits wander, run from the hunter and can be shot.</p></li>
+    <li><h3>The stag</h3><p class="done"><b>Done</b>All states, red eyes, navigation, 5 hits to kill.</p></li>
+    <li><h3>HUD and endings</h3><p class="done"><b>Done</b>Hearts, ammo, stag bar, win and lose screens with Play again.</p></li>
+    <li><h3>Touch controls for iPhone</h3><p class="done"><b>Done</b>Two floating sticks and a reload button, checked with simulated touches on the Mac. Not yet tried on an iPhone.</p></li>
+  </ol>
+</section>
+
+<footer>The map is drawn from the real level data. Numbers and assets match the project as of the latest commit. Rough spots are listed under "Where it stands".</footer>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "default" });</script>

@@ -1,0 +1,17 @@
+[gd_scene format=3]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
+resource_name = "Metal"
+albedo_color = Color(0.3, 0.31, 0.34, 1)
+metallic = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_gun"]
+material = SubResource("StandardMaterial3D_metal")
+size = Vector3(0.04, 0.06, 0.3)
+
+[node name="Gun" type="Node3D"]
+
+[node name="Armature" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Armature"]
+mesh = SubResource("BoxMesh_gun")

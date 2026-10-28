@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://cefthvpnyspsy"]
+
+[ext_resource type="Script" uid="uid://6ngwe6i6gwnj" path="res://scripts/critter.gd" id="1_33vap"]
+[ext_resource type="PackedScene" uid="uid://qt43us2mrmvg" path="res://assets/animals/Fox.gltf" id="2_pwmc1"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_7uos6"]
+size = Vector3(0.5, 0.6, 1.1)
+
+[node name="Fox" type="CharacterBody3D" unique_id=944761708]
+collision_layer = 2
+script = ExtResource("1_33vap")
+run_speed = 6.0
+wander_radius = 9.0
+
+[node name="Model" parent="." unique_id=2140298209 instance=ExtResource("2_pwmc1")]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="." unique_id=1071221675]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+shape = SubResource("BoxShape3D_7uos6")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1535697543]
+radius = 0.4

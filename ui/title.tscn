@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ummtlet5lvuf"]
+
+[ext_resource type="Script" uid="uid://dje27438j0rm" path="res://scripts/title.gd" id="1_co4ec"]
+
+[node name="TitleScreen" type="CanvasLayer" unique_id=1690566686]
+script = ExtResource("1_co4ec")

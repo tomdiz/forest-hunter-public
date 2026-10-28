@@ -1,0 +1,218 @@
+[gd_scene format=4 uid="uid://bm07glvrl6hb4"]
+
+[ext_resource type="PackedScene" uid="uid://bl54jg08d5hqx" path="res://actors/player.tscn" id="2_r307n"]
+[ext_resource type="Material" uid="uid://coakahtvw7brp" path="res://xogot/modeler/grid.tres" id="3_aol6e"]
+[ext_resource type="PackedScene" uid="uid://corir5kfpwa3t" path="res://actors/camera_rig.tscn" id="3_qpjmu"]
+[ext_resource type="PackedScene" uid="uid://cuqybkm8wuyat" path="res://actors/stag.tscn" id="6_qpjmu"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_qpjmu"]
+_surfaces = [{
+"aabb": AABB(-10, -0.1, -10, 20, 0.2, 20),
+"attribute_data": PackedByteArray("AACgQdDMTD4AAKBBAAAAAAAAAAAAAAAAAAAAANDMTD4AAAAA0MxMPgAAoEHQzEw+AACgQQAAAAAAAAAAAAAAAAAAAADQzEw+AACgQdDMTD4AAKBBAAAAAAAAAAAAAAAAAACgQdDMTD4AAKBBAAAAAAAAAAAAAAAAAAAAANDMTD4AAKBBAACgQQAAoEEAAAAAAAAAAAAAAAAAAAAAAACgQQAAAAAAAKBBAACgQQAAoEEAAKBBAAAAAAAAAAAAAAAA"),
+"format": 34359742487,
+"index_count": 36,
+"index_data": PackedByteArray("AAACAAEAAAADAAIABAAGAAUABAAHAAYACAAKAAkACAALAAoADAAOAA0ADAAPAA4AEAASABEAEAATABIAFAAWABUAFAAXABYA"),
+"material": ExtResource("3_aol6e"),
+"primitive": 3,
+"uv_scale": Vector4(0, 0, 0, 0),
+"vertex_count": 24,
+"vertex_data": PackedByteArray("AAAgwc3MzL0AACDBAAAgwc3MzD0AACDBAAAgQc3MzD0AACDBAAAgQc3MzL0AACDBAAAgwc3MzL0AACBBAAAgQc3MzL0AACBBAAAgQc3MzD0AACBBAAAgwc3MzD0AACBBAAAgwc3MzL0AACDBAAAgwc3MzL0AACBBAAAgwc3MzD0AACBBAAAgwc3MzD0AACDBAAAgQc3MzL0AACDBAAAgQc3MzD0AACDBAAAgQc3MzD0AACBBAAAgQc3MzL0AACBBAAAgwc3MzD0AACDBAAAgwc3MzD0AACBBAAAgQc3MzD0AACBBAAAgQc3MzD0AACDBAAAgwc3MzL0AACDBAAAgQc3MzL0AACDBAAAgQc3MzL0AACBBAAAgwc3MzL0AACBB/////wAA/z//////AAD/P/////8AAP8//////wAA/z//f/9/////P/9//3////8//3//f////z//f/9/////PwAA/3//f/8/AAD/f/9//z8AAP9//3//PwAA/3//f/8/////f///AAD///9///8AAP///3///wAA////f///AAD/f///AAD/P/9///8AAP8//3///wAA/z//f///AAD/P/9/AAD///8//38AAP///z//fwAA////P/9/AAD///8/")
+}]
+metadata/_xogot_modeler = {
+"mesh": {
+"faces": [{
+"elementGroup": 0.0,
+"id": "991294C7-2006-4387-A722-D310A9819A33",
+"indices": PackedInt32Array(0, 1, 2, 0, 2, 3),
+"manualUV": false,
+"smoothingGroup": 0.0,
+"submeshIndex": 0.0,
+"textureGroup": 0.0,
+"uv": {
+"anchor": "upperLeft",
+"fill": "tile",
+"flipU": false,
+"flipV": false,
+"offset": [0.0, 0.0],
+"rotation": 0.0,
+"scale": [1.0, 1.0],
+"swapUV": false,
+"useWorldSpace": false
+}
+}, {
+"elementGroup": 0.0,
+"id": "C2BB638E-6424-4EC3-A19E-FA034EE0AFD2",
+"indices": PackedInt32Array(4, 5, 6, 4, 6, 7),
+"manualUV": false,
+"smoothingGroup": 0.0,
+"submeshIndex": 0.0,
+"textureGroup": 0.0,
+"uv": {
+"anchor": "upperLeft",
+"fill": "tile",
+"flipU": false,
+"flipV": false,
+"offset": [0.0, 0.0],
+"rotation": 0.0,
+"scale": [1.0, 1.0],
+"swapUV": false,
+"useWorldSpace": false
+}
+}, {
+"elementGroup": 0.0,
+"id": "585529E7-8F6F-4C98-A2DC-C149DA84DBC7",
+"indices": PackedInt32Array(8, 9, 10, 8, 10, 11),
+"manualUV": false,
+"smoothingGroup": 0.0,
+"submeshIndex": 0.0,
+"textureGroup": 0.0,
+"uv": {
+"anchor": "upperLeft",
+"fill": "tile",
+"flipU": false,
+"flipV": false,
+"offset": [0.0, 0.0],
+"rotation": 0.0,
+"scale": [1.0, 1.0],
+"swapUV": false,
+"useWorldSpace": false
+}
+}, {
+"elementGroup": 0.0,
+"id": "6DF81D64-CA89-45FA-A0C7-2DEB32AB040E",
+"indices": PackedInt32Array(12, 13, 14, 12, 14, 15),
+"manualUV": false,
+"smoothingGroup": 0.0,
+"submeshIndex": 0.0,
+"textureGroup": 0.0,
+"uv": {
+"anchor": "upperLeft",
+"fill": "tile",
+"flipU": false,
+"flipV": false,
+"offset": [0.0, 0.0],
+"rotation": 0.0,
+"scale": [1.0, 1.0],
+"swapUV": false,
+"useWorldSpace": false
+}
+}, {
+"elementGroup": 0.0,
+"id": "37E35C03-23C6-489D-A527-3C5623380C24",
+"indices": PackedInt32Array(16, 17, 18, 16, 18, 19),
+"manualUV": false,
+"smoothingGroup": 0.0,
+"submeshIndex": 0.0,
+"textureGroup": 0.0,
+"uv": {
+"anchor": "upperLeft",
+"fill": "tile",
+"flipU": false,
+"flipV": false,
+"offset": [0.0, 0.0],
+"rotation": 0.0,
+"scale": [1.0, 1.0],
+"swapUV": false,
+"useWorldSpace": false
+}
+}, {
+"elementGroup": 0.0,
+"id": "380BC88A-8931-4E73-80DD-5BFA3E3ABF5D",
+"indices": PackedInt32Array(20, 21, 22, 20, 22, 23),
+"manualUV": false,
+"smoothingGroup": 0.0,
+"submeshIndex": 0.0,
+"textureGroup": 0.0,
+"uv": {
+"anchor": "upperLeft",
+"fill": "tile",
+"flipU": false,
+"flipV": false,
+"offset": [0.0, 0.0],
+"rotation": 0.0,
+"scale": [1.0, 1.0],
+"swapUV": false,
+"useWorldSpace": false
+}
+}],
+"isSelectable": true,
+"logicalVertexIDs": ["65A91175-3938-4E15-8F3B-D6B6972109B8", "805DC67B-DE23-4FF0-BC18-01CC5D50F68E", "42DDC519-66AC-45F4-B2DC-8FAF4E1DFCB4", "470E163B-F26F-49E8-95BB-6E0FDE519418", "7D9675FC-4D3F-48DF-B3DD-E2F53B489A80", "8550008E-0383-4F25-ADD0-0961040D75E6", "9EEB1BFA-E9C9-421E-96BD-31FAEA5A4317", "A7CA9B2A-FEE2-4F98-8D4D-41E89630F10E"],
+"positions": PackedVector3Array(-10, -0.1, -10, -10, 0.1, -10, 10, 0.1, -10, 10, -0.1, -10, -10, -0.1, 10, 10, -0.1, 10, 10, 0.1, 10, -10, 0.1, 10, -10, -0.1, -10, -10, -0.1, 10, -10, 0.1, 10, -10, 0.1, -10, 10, -0.1, -10, 10, 0.1, -10, 10, 0.1, 10, 10, -0.1, 10, -10, 0.1, -10, -10, 0.1, 10, 10, 0.1, 10, 10, 0.1, -10, -10, -0.1, -10, 10, -0.1, -10, 10, -0.1, 10, -10, -0.1, 10),
+"recordIDs": ["C2769306-1F9D-49FA-81DE-AF6E34576443", "6E8E3098-4E64-4AF5-BE6C-1F5CA7170109", "28DD3469-85AB-4C5E-95C8-BF3981E1517E", "520F3FB0-F356-4920-A941-EEAC8CE12A74", "C42E2EAB-1CC6-47F4-B36A-131C2AE95D1C", "806B7401-2BA2-4318-9244-489BF2CE2CD8", "51326971-5551-4832-AB53-E25A9224B694", "6D8268EF-5C72-4D0D-8D3F-BDA7B74A25BE", "4457B12A-A2AB-4414-8A24-1A94C78DA593", "B2F707E4-2E7B-4093-A6BD-71F395CAFB83", "8146FE89-55EE-43DF-9583-5C0CB390826E", "B480CCDF-1DDE-4E81-8B2A-4C17C60483EB", "D2CF8FDF-EEB3-4FB4-9DFA-E3D644676B29", "310CCE93-2E17-42F3-8AA6-72265E0398FF", "0D433FDA-8D31-4E3B-A356-A1E22D06DB1D", "6B86D300-BCA4-445B-AA42-61A407F3C05A", "582A9481-1308-40DE-91F7-D55AD0F1F0E6", "3F37AE87-9C56-4003-A1D2-8225060BB63A", "3CE1231E-7639-42DA-954E-CD562C6D8ED1", "18BBE670-2245-4338-81BF-05893C34861B", "4F4CFD65-8559-4336-A88E-18C930410725", "B1595AEB-FCD3-4E69-B4CA-A6248662623C", "46609B0E-86F7-428E-94FD-F6B1EE3B7517", "2C19467B-FA75-475B-9B6C-DCEE39686974"],
+"selection": {
+"edges": [],
+"faces": [],
+"vertices": []
+},
+"shape": {
+"generatedVersion": 1.0,
+"kind": "cube",
+"parameters": {},
+"pivotRatio": [0.5, 0.5, 0.5],
+"rotation": [0.0, 0.0, 0.0, 1.0],
+"size": [20.0, 0.2, 20.0]
+},
+"sharedTextures": [],
+"sharedVertices": [[0.0, 8.0, 20.0], [1.0, 11.0, 16.0], [2.0, 13.0, 19.0], [3.0, 12.0, 21.0], [4.0, 9.0, 23.0], [5.0, 15.0, 22.0], [6.0, 14.0, 18.0], [7.0, 10.0, 17.0]],
+"unwrap": {
+"angleError": 8.0,
+"areaError": 15.0,
+"hardAngle": 88.0,
+"packMargin": 20.0
+},
+"uv0": PackedVector2Array(20, 0.79999995, 20, 1, 0, 1, 0, 0.79999995, 0, 0.79999995, 20, 0.79999995, 20, 1, 0, 1, 0, 0.79999995, 20, 0.79999995, 20, 1, 0, 1, 20, 0.79999995, 20, 1, 0, 1, 0, 0.79999995, 20, -19, 20, 1, 0, 1, 0, -19, 0, -19, 20, -19, 20, 1, 0, 1),
+"versionIndex": 1.0
+},
+"surfaceSlots": [0.0],
+"version": 4.0
+}
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_dgfey"]
+data = PackedVector3Array(-10, -0.099999994, -10, 10, 0.099999994, -10, -10, 0.099999994, -10, -10, -0.099999994, -10, 10, -0.099999994, -10, 10, 0.099999994, -10, -10, -0.099999994, 10, 10, 0.099999994, 10, 10, -0.099999994, 10, -10, -0.099999994, 10, -10, 0.099999994, 10, 10, 0.099999994, 10, -10, -0.099999994, -10, -10, 0.099999994, 10, -10, -0.099999994, 10, -10, -0.099999994, -10, -10, 0.099999994, -10, -10, 0.099999994, 10, 10, -0.099999994, -10, 10, 0.099999994, 10, 10, 0.099999994, -10, 10, -0.099999994, -10, 10, -0.099999994, 10, 10, 0.099999994, 10, -10, 0.099999994, -10, 10, 0.099999994, 10, -10, 0.099999994, 10, -10, 0.099999994, -10, 10, 0.099999994, -10, 10, 0.099999994, 10, -10, -0.099999994, -10, 10, -0.099999994, 10, 10, -0.099999994, -10, -10, -0.099999994, -10, -10, -0.099999994, 10, 10, -0.099999994, 10)
+
+[node name="TestHunter" type="Node3D" unique_id=841053990]
+
+[node name="Ground" type="MeshInstance3D" parent="." unique_id=793806273]
+transform = Transform3D(4, 0, 0, 0, 1, 0, 0, 0, 4, 0, -0.1, 0)
+mesh = SubResource("ArrayMesh_qpjmu")
+metadata/_xogot_modeler_collision = {
+"auto_resize": false,
+"original_layers": 1,
+"original_visible": true,
+"role": "detail",
+"shape": "mesh"
+}
+
+[node name="ModelerCollision" type="StaticBody3D" parent="Ground" unique_id=2001585888]
+metadata/_xogot_modeler_generated_collision = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground/ModelerCollision" unique_id=609897573]
+shape = SubResource("ConcavePolygonShape3D_dgfey")
+
+[node name="Sun" type="DirectionalLight3D" parent="." unique_id=890322912]
+transform = Transform3D(0.8660254, 0.38302222, -0.32139382, 0, 0.64278764, 0.76604444, 0.5, -0.66341394, 0.5566704, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Player" parent="." unique_id=1020688532 instance=ExtResource("2_r307n")]
+
+[node name="CameraRig" parent="." unique_id=677970806 instance=ExtResource("3_qpjmu")]
+
+[node name="HideSpots" type="Node3D" parent="." unique_id=1878230313]
+
+[node name="Spot1" type="Marker3D" parent="HideSpots" unique_id=358110077 groups=["hide_spots"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -10)
+
+[node name="Spot2" type="Marker3D" parent="HideSpots" unique_id=320661766 groups=["hide_spots"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 12)
+
+[node name="Spot3" type="Marker3D" parent="HideSpots" unique_id=1597385282 groups=["hide_spots"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, 6)
+
+[node name="Spot4" type="Marker3D" parent="HideSpots" unique_id=987160677 groups=["hide_spots"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 0, -6)
+
+[node name="Spot5" type="Marker3D" parent="HideSpots" unique_id=1951785007 groups=["hide_spots"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -16)
+
+[node name="Stag" parent="." unique_id=1314700142 instance=ExtResource("6_qpjmu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -10)

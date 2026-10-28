@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://cuqybkm8wuyat"]
+
+[ext_resource type="Script" uid="uid://c1uvfyaeive53" path="res://scripts/stag.gd" id="1_6v4qi"]
+[ext_resource type="PackedScene" uid="uid://cwjffvsnilqmg" path="res://assets/animals/Stag.gltf" id="1_y5u5o"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6v4qi"]
+shading_mode = 0
+albedo_color = Color(1, 0.05, 0.05, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_7fcb7"]
+material = SubResource("StandardMaterial3D_6v4qi")
+radius = 0.07
+height = 0.14
+
+[sub_resource type="SphereMesh" id="SphereMesh_mvmt7"]
+material = SubResource("StandardMaterial3D_6v4qi")
+radius = 0.07
+height = 0.14
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_rmyh5"]
+size = Vector3(1, 1.9, 2.4)
+
+[node name="Stag" type="CharacterBody3D" unique_id=1314700142]
+script = ExtResource("1_6v4qi")
+
+[node name="Model" parent="." unique_id=493629201 instance=ExtResource("1_y5u5o")]
+transform = Transform3D(0.6, 0, 0, 0, 0.6, 0, 0, 0, 0.6, 0, 0, 0)
+
+[node name="EyeL" type="MeshInstance3D" parent="Model/AnimalArmature/Skeleton3D/Head" parent_id_path=PackedInt32Array(493629201, 1556963557) index="1" unique_id=912644889]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.14, 0.1, 0.3)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_7fcb7")
+
+[node name="EyeR" type="MeshInstance3D" parent="Model/AnimalArmature/Skeleton3D/Head" parent_id_path=PackedInt32Array(493629201, 1556963557) index="2" unique_id=130668795]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.14, 0.1, 0.3)
+cast_shadow = 0
+mesh = SubResource("SphereMesh_mvmt7")
+
+[node name="EyeGlow" type="OmniLight3D" parent="Model/AnimalArmature/Skeleton3D/Head" parent_id_path=PackedInt32Array(493629201, 1556963557) index="3" unique_id=241867689]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0.45)
+light_color = Color(1, 0.1, 0.1, 1)
+light_energy = 1.5
+omni_range = 4.0
+
+[node name="Collision" type="CollisionShape3D" parent="." unique_id=1457534855]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("BoxShape3D_rmyh5")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=820501178]
+path_desired_distance = 0.6
+target_desired_distance = 0.7
+radius = 0.8
+
+[editable path="Model"]

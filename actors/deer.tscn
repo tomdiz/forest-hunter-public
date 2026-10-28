@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://dw1fsx7p3en6j"]
+
+[ext_resource type="Script" uid="uid://6ngwe6i6gwnj" path="res://scripts/critter.gd" id="1_f0qii"]
+[ext_resource type="PackedScene" uid="uid://dyw8pepcg58ek" path="res://assets/animals/Deer.gltf" id="2_a6lf4"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mhq14"]
+size = Vector3(0.7, 1.5, 1.5)
+
+[node name="Deer" type="CharacterBody3D" unique_id=1729582536]
+collision_layer = 2
+script = ExtResource("1_f0qii")
+walk_speed = 1.2
+run_speed = 6.5
+flee_range = 9.0
+calm_range = 13.0
+
+[node name="Model" parent="." unique_id=1336689827 instance=ExtResource("2_a6lf4")]
+transform = Transform3D(0.35, 0, 0, 0, 0.35, 0, 0, 0, 0.35, 0, 0, 0)
+
+[node name="Collision" type="CollisionShape3D" parent="." unique_id=1019349484]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, 0)
+shape = SubResource("BoxShape3D_mhq14")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="." unique_id=1547085774]
+radius = 0.4

@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://bl54jg08d5hqx"]
+
+[ext_resource type="Script" uid="uid://bo7y4dlwq2p30" path="res://scripts/player.gd" id="1_7m6kv"]
+[ext_resource type="PackedScene" uid="uid://qn4vr83tp1ce" path="res://assets/characters/Adventurer.gltf" id="2_gk1vc"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_eq2sf"]
+radius = 0.35
+height = 1.8
+
+[node name="Player" type="CharacterBody3D" unique_id=1020688532]
+script = ExtResource("1_7m6kv")
+
+[node name="Hunter" parent="." unique_id=733047705 instance=ExtResource("2_gk1vc")]
+
+[node name="RifleMount" type="BoneAttachment3D" parent="Hunter/CharacterArmature/Skeleton3D" parent_id_path=PackedInt32Array(733047705, 599513086) index="5" unique_id=1979402880]
+transform = Transform3D(-0.32974368, -0.002543753, -0.94406706, -0.3024843, -0.9469926, 0.10820323, -0.8942998, 0.32124466, 0.31149527, -0.21043275, 1.0236228, 0.1371654)
+bone_name = "Wrist.R"
+bone_idx = 34
+
+[node name="AnimationPlayer" parent="Hunter" index="1" unique_id=402935670]
+autoplay = &"Idle_Gun_Pointing"
+
+[node name="Collision" type="CollisionShape3D" parent="." unique_id=1664570074]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_eq2sf")
+
+[editable path="Hunter"]
